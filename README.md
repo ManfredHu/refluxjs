@@ -63,7 +63,7 @@ You can read more in this [blog post about React Flux vs Reflux](http://spoike.g
 在 Reflux 有着一些与 Flux 相似的观点，如下:
 
 * actions动作
-* data stores数据中心
+* data stores数据存储
 * 数据流动是单向的
 
 ### 与 Flux 的不同点
@@ -198,14 +198,16 @@ createAction({
 
 There are a couple of hooks available for each action.
 
-* `preEmit` - Is called before the action emits an event. 接受从action调用的参数.如果它返回的不是undefined, 它会被用作`shouldEmit`和 随后触发动作的参数.
+* `preEmit` - 在action被触发之前调用. 接受从action调用的参数.如果它返回的不是undefined, 它会被用作`shouldEmit`和 随后触发动作的参数.
 
-* `shouldEmit` - Is called after `preEmit` and before the action emits an event. By default it returns `true` which will let the action emit the event. You may override this if you need to check the arguments that the action receives and see if it needs to emit the event.
+* `shouldEmit` - 在 `preEmit` 之后，在action事件触发之前. 默认返回 `true` 会触发action. 你可以重写这个返回值如果你需要检查action接受的参数.
 
-Example usage:
+用例:
 
 ```javascript
-Actions.statusUpdate.preEmit = function() { console.log(arguments); };
+Actions.statusUpdate.preEmit = function() { 
+     console.log(arguments); 
+};
 Actions.statusUpdate.shouldEmit = function(value) {
     return value > 0;
 };
@@ -215,6 +217,7 @@ Actions.statusUpdate(1);
 // Should output: 1
 ```
 
+当你创建对象的时候，你也可以通过设置默认对象 `hooks` 来创建action
 You can also set the hooks by sending them in a definition object as you create the action:
 
 ```javascript
@@ -226,9 +229,9 @@ var action = Reflux.createAction({
 
 #### Reflux.ActionMethods
 
-If you would like to have a common set of methods available to all actions you can extend the `Reflux.ActionMethods` object, which is mixed into the actions when they are created.
+如果你有一个通用的设置，你可以用 `Reflux.ActionMethods`对象，当被创建的时候会并入action里面
 
-Example usage:
+用例:
 
 ```javascript
 Reflux.ActionMethods.exampleMethod = function() { console.log(arguments); };
@@ -239,18 +242,18 @@ Actions.statusUpdate.exampleMethod('arg1');
 
 [Back to top](#content)
 
-### Creating data stores
+### 创建数据存储 data stores
 
-Create a data store much like ReactJS's own `React.createClass` by passing a definition object to `Reflux.createStore`. You may set up all action listeners in the `init` function and register them by calling the store's own `listenTo` function.
+创建一个data store数据存储就像 ReactJS 自带的 `React.createClass`方法一样简单，就是 `Reflux.createStore`这个方法，你也可以在`init`函数通过调用store的`listenTo`函数来设置action的监听器
 
 ```javascript
 // Creates a DataStore
 var statusStore = Reflux.createStore({
-
     // Initial setup
     init: function() {
 
         // Register statusUpdate action
+        // this.listenTo(actionName, callback)
         this.listenTo(statusUpdate, this.output);
     },
 
@@ -258,43 +261,47 @@ var statusStore = Reflux.createStore({
     output: function(flag) {
         var status = flag ? 'ONLINE' : 'OFFLINE';
 
-        // Pass on to listeners
+        // 传递给listeners
         this.trigger(status);
     }
-
 });
 ```
 
-In the above example, whenever the action is called, the store's `output` callback will be called with whatever parameters were sent in the action. E.g. if the action is called as `statusUpdate(true)` then the flag argument in `output` function is `true`.
+上面的例子中, 无论何时action(statusUpdate)被调用了, store的 `output` 回调都将被调用，无论output的参数`flag`传入的是什么. 比如，当action被 `statusUpdate(true)` 调用，则在 `output`函数中的flag参数是`true`.
 
-A data store is a publisher much like the actions, so they too have the `preEmit` and `shouldEmit` hooks.
+数据存储data store更像是一个publisher，所以拥有`preEmit` and `shouldEmit`两个hooks
 
 #### Reflux.StoreMethods
 
-If you would like to have a common set of methods available to all stores you can extend the `Reflux.StoreMethods` object, which is mixed into the stores when they are created.
+如果有通用配置来设置store，你可以用 `Reflux.StoreMethods` 对象，它会在store被创建的时候传入配置
 
-Example usage:
+用例:
 
 ```javascript
-Reflux.StoreMethods.exampleMethod = function() { console.log(arguments); };
+Reflux.StoreMethods.exampleMethod = function() { 
+     console.log(arguments); 
+};
 
 statusStore.exampleMethod('arg1');
 // Should output: 'arg1'
 ```
 
 #### Mixins in stores
-
-Just as you can add mixins to React components, so it is possible to add your mixins to Store.
+就像你在React组件里用mixins一样，可以mixins到store里面
 
 ```javascript
-var MyMixin = { foo: function() { console.log('bar!'); } }
+var MyMixin = { //注意这里是一个对象
+     foo: function() { 
+          console.log('bar!'); 
+     } 
+}
 var Store = Reflux.createStore({
     mixins: [MyMixin]
 });
 Store.foo(); // outputs "bar!" to console
 ```
 
-Methods from mixins are available as well as the methods declared in the Store. So it's possible to access store's `this` from mixin, or methods of mixin from methods of store:
+mixins的对象的方法就像声明在store里面一样，所以可以用`this`来引用store里面的东西
 
 ```javascript
 var MyMixin = { mixinMethod: function() { console.log(this.foo); } }
@@ -307,18 +314,18 @@ var Store = Reflux.createStore({
 });
 ```
 
-A nice feature of mixins is that if a store is using multiple mixins and several mixins define the same lifecycle method (e.g. `init`, `preEmit`, `shouldEmit`), all of the lifecycle methods are guaranteed to be called.
+一个非常棒的mixins的特点是如果在生命周期内，store有众多mixin，则所有的生命周期方法保证被调用。
 
 #### Listening to many actions at once
 
-Since it is a very common pattern to listen to all actions from a `createActions` call in a store `init` call, the store has a `listenToMany` function that takes an object of listenables. Instead of doing this:
+监听所有的action是非常普遍的做法，我们可以用`listenToMany`函数来解决:
 
 ```javascript
 var actions = Reflux.createActions(["fireBall","magicMissile"]);
 
 var Store = Reflux.createStore({
     init: function() {
-        this.listenTo(actions.fireBall,this.onFireBall);
+        this.listenTo(actions.fireBall,this.onFireBall); //这么写你会嫌烦的，看下面的写法
         this.listenTo(actions.magicMissile,this.onMagicMissile);
     },
     onFireBall: function(){
@@ -330,14 +337,14 @@ var Store = Reflux.createStore({
 });
 ```
 
-...you can do this:
+你可以这么做:
 
 ```javascript
-var actions = Reflux.createActions(["fireBall","magicMissile"]);
+var actions = Reflux.createActions(["fireBall","magicMissile"]); //多个action
 
 var Store = Reflux.createStore({
     init: function() {
-        this.listenToMany(actions);
+        this.listenToMany(actions); //监听所有的action
     },
     onFireBall: function(){
         // whoooosh!
@@ -348,11 +355,12 @@ var Store = Reflux.createStore({
 });
 ```
 
+这会添加监听器来监听所有的相应的actions，那些`actionName`被相应的`onActionName`
 This will add listeners to all actions `actionName` who have a corresponding `onActionName` (or `actionName` if you prefer) method in the store. Thus if the `actions` object should also have included an `iceShard` spell, that would simply be ignored.
 
 #### The listenables shorthand
 
-To make things more convenient still, if you give an object of actions to the `listenables` property of the store definition, that will be automatically passed to `listenToMany`. So the above example can be simplified even further:
+为了偷懒，如果你给store的`listenables` 属性设置actions,会自动用`listenToMany`.所以上面的例子可以简写成下面这样的:
 
 ```javascript
 var actions = Reflux.createActions(["fireBall","magicMissile"]);
@@ -368,7 +376,7 @@ var Store = Reflux.createStore({
 });
 ```
 
-The `listenables` property can also be an array of such objects, in which case all of them will be sent to `listenToMany`. This allows you to do convenient things like this:
+ `listenables` 属性可以是一个对象数组,所有的参数会被传递到 `listenToMany`. 你可以这样:
 
 ```javascript
 var Store = Reflux.createStore({
@@ -379,7 +387,7 @@ var Store = Reflux.createStore({
 
 #### Listenables and asynchronous actions
 
-If `options.children` is set, as in the example below, you can use `onActionSubaction` to add a listener to the child action. For example:
+如果`options.children`被设置, 像下面这样，你可以用 `onActionSubaction` 添加监听到子action.
 
 ```javascript
 var Actions = Reflux.createActions({
@@ -407,7 +415,7 @@ var Store = Reflux.createStore({
 
 ### Listening to changes in data store
 
-In your component, register to listen to changes in your data store like this:
+组件里面可以在store监听状态的变化:
 
 ```javascript
 // Fairly simple view component that outputs to console
@@ -440,7 +448,7 @@ status:  OFFLINE
 
 ### React component example
 
-Register your component to listen for changes in your data stores, preferably in the `componentDidMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount`, like this:
+注册你的组件listen到你的data stores，最好在 `componentDidMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html)绑定，在`componentWillUnmount`解绑：
 
 ```javascript
 var Status = React.createClass({
@@ -450,10 +458,10 @@ var Status = React.createClass({
             currentStatus: status
         });
     },
-    componentDidMount: function() {
+    componentDidMount: function() { //绑定
         this.unsubscribe = statusStore.listen(this.onStatusChange);
     },
-    componentWillUnmount: function() {
+    componentWillUnmount: function() { //解除绑定
         this.unsubscribe();
     },
     render: function() {
