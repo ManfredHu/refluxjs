@@ -1,6 +1,7 @@
 # RefluxJS
 
-A simple library for unidirectional dataflow architecture inspired by ReactJS [Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
+一个简单的被ReactJS启发的用于单向数据流框架的库
+[Flux](http://facebook.github.io/react/blog/2014/05/06/flux.html).
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][npm-url]
@@ -51,27 +52,27 @@ If you don't want to use the React-specific API, or want to develop Reflux for y
 - [Advanced Usage](#advanced-usage)
 - [Colophon](#colophon)
 
-## Comparing RefluxJS with Facebook Flux
+## 对比 RefluxJS 和 Facebook的 Flux
 
-The goal of the refluxjs project is to get this architecture easily up and running in your web application, both client-side or server-side. There are some differences between how this project works and how Facebook's proposed Flux architecture works:
+reflux项目的目标是让你的web应用搭建起来更加简单便捷, 不管是在客户端还是在服务器端都是如此. 不同与Facebook的Flux，区别有下面几点:
 
 You can read more in this [blog post about React Flux vs Reflux](http://spoike.ghost.io/deconstructing-reactjss-flux/).
 
-### Similarities with Flux
+### 与 Flux 相似但不相同
 
-Some concepts are still in Reflux in comparison with Flux:
+在 Reflux 有着一些与 Flux 相似的观点，如下:
 
-* There are actions
-* There are data stores
-* The data flow is unidirectional
+* actions动作
+* data stores数据中心
+* 数据流动是单向的
 
-### Differences with Flux
+### 与 Flux 的不同点
 
-Reflux has refactored Flux to be a bit more dynamic and be more Functional Reactive Programming (FRP) friendly:
+Reflux 已经重构了 Flux ，变得更加灵活和拥有函数运用 Functional Reactive Programming (FRP) 的特性:
 
-* The singleton dispatcher is removed in favor for letting every action act as dispatcher instead.
-* Because actions are listenable, the stores may listen to them. Stores don't need to have big switch statements that do static type checking (of action types) with strings
-* Stores may listen to other stores, i.e. it is possible to create stores that can *aggregate data further*, similar to a map/reduce.
+* 单例分发器 dispatcher 被 action 取代
+* 因为action是可监听的, 所以store也许监听了action. Stores 不必用一大段的 switch 语句去监测 action 的静态类别
+* Stores 也许监听了其他的 stores, i.e. 它也许拥有可以合并数据的特性 *aggregate data further*, 类似数组 map/reduce 的东西.
 * `waitFor` is replaced in favor to handle *serial* and *parallel* data flows:
  * **Aggregate data stores** (mentioned above) may listen to other stores in *serial*
  * **Joins** for joining listeners in *parallel*
@@ -79,7 +80,7 @@ Reflux has refactored Flux to be a bit more dynamic and be more Functional React
 
 [Back to top](#content)
 
-## Examples
+## 例子
 
 You can find some example projects at these locations:
 
