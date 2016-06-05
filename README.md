@@ -497,10 +497,10 @@ The mixin provides the `listenTo` method for the React component, that works muc
 
 #### Using Reflux.listenTo
 
-If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can instead use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you, as well as add the `ListenerMixin` functionality. With this our example above can be reduced even further:
+If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can instead use a call to `Reflux.listenTo` as a mixin. 自动设置`componentDidMount`搞定剩下的,例如添加`ListenerMixin` 功能. 
 
 ```javascript
-var Status = React.createClass({
+var Status = React.createClass({ //创建组件
     mixins: [Reflux.listenTo(statusStore,"onStatusChange")],
     onStatusChange: function(status) {
         this.setState({
@@ -519,7 +519,8 @@ There is also `Reflux.listenToMany` which works in exactly the same way, exposin
 
 #### Using Reflux.connect
 
-If all you want to do is update the state of your component to whatever the data store transmits, you can use `Reflux.connect(listener,stateKey)` as a mixin. The state is updated via `this.setState({<stateKey>:data})`. Here's the example above changed to use this syntax:
+如果你想要数据一更新组件就更新，你可以用`Reflux.connect(listener,stateKey)`作为mixins.
+它会通过 `this.setState({<stateKey>:data})`搞定.例子如下:
 
 ```javascript
 var Status = React.createClass({
@@ -530,7 +531,7 @@ var Status = React.createClass({
 });
 ```
 
-The `Reflux.connect()` mixin will check the store for a `getInitialState` method. If found it will set the components `getInitialState`
+`Reflux.connect()` mixin 会监测store的 `getInitialState` 方法. 如果找到它会设置组件的 `getInitialState`
 
 ```javascript
 var statusStore = Reflux.createStore({
