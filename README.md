@@ -122,30 +122,30 @@ Reflux is available at [jsdelivr](http://www.jsdelivr.com/#!refluxjs).
 
 ### ES5
 
-Like React, Reflux depends on an es5-shim for older browsers. The es5-shim.js from [kriskowal's es5-shim](https://github.com/kriskowal/es5-shim) provides everything required.
+Reflux 像React 一样用了 es5-shim 来对付老式的浏览器. es5-shim.js [kriskowal's es5-shim](https://github.com/kriskowal/es5-shim)
 
 [Back to top](#content)
 
-## Usage
+## 用法
 
-### Creating actions
+### 创建 actions
 
-Create an action by calling `Reflux.createAction` with an optional options object.
+用 `Reflux.createAction` 创建action.可选的 options 对象为参数.
 
 ```javascript
 var statusUpdate = Reflux.createAction(options);
 ```
 
-An action is a [function object](http://en.wikipedia.org/wiki/Function_object) that can be invoked like any function.
+action是一个可以被调用的函数对象，就像普通的对象一样 [function object](http://en.wikipedia.org/wiki/Function_object)
 
 ```javascript
 statusUpdate(data); // Invokes the action statusUpdate
 statusUpdate.triggerAsync(data); // same effect as above
 ```
 
-If `options.sync` is true, the functor will instead call `action.trigger` which is a synchronous operation. You can change `action.sync` during the lifetime of the action, and the following calls will honour that change.
+如果`options.sync` 为 true, 函数调用就要用 `action.trigger` 这个同步选项. 你可以在action的生命周期内改变 `action.sync`, 跟着的调用也会一起改变
 
-There is also a convenience function for creating multiple actions.
+非常便捷的创建多个 actions 的方法，传入的为action数组.
 
 ```javascript
 var Actions = Reflux.createActions([
@@ -161,9 +161,9 @@ var Actions = Reflux.createActions([
 Actions.statusUpdate();
 ```
 
-#### Asynchronous actions
+#### 异步 actions
 
-For actions that represent asynchronous operations (e.g. API calls), a few separate dataflows result from the operation. In the most typical case, we consider completion and failure of the operation. To create related actions for these dataflows, which you can then access as attributes, use `options.children`.
+对于action的异步操作 (e.g. API calls) . 通常， 我们会在 completion 和 failure 即成功和失败注册函数，然后去执行. 对于这种需要注册回调函数的行为,你可以用`options.children`.
 
 ```javascript
 // this creates 'load', 'load.completed' and 'load.failed'
@@ -181,7 +181,7 @@ Actions.load.listen( function() {
 });
 ```
 
-There is a shorthand to define the `completed` and `failed` actions in the typical case: `options.asyncResult`. The following are equivalent:
+简短的调用 `completed` 和 `failed` 的方法: `options.asyncResult`. 下面的两种用法作用是一样的:
 
 ```javascript
 createAction({
@@ -198,7 +198,7 @@ createAction({
 
 There are a couple of hooks available for each action.
 
-* `preEmit` - Is called before the action emits an event. It receives the arguments from the action invocation. If it returns something other than undefined, that will be used as arguments for `shouldEmit` and subsequent emission.
+* `preEmit` - Is called before the action emits an event. 接受从action调用的参数.如果它返回的不是undefined, 它会被用作`shouldEmit`和 随后触发动作的参数.
 
 * `shouldEmit` - Is called after `preEmit` and before the action emits an event. By default it returns `true` which will let the action emit the event. You may override this if you need to check the arguments that the action receives and see if it needs to emit the event.
 
