@@ -24,8 +24,8 @@ You can read an overview of Flux [here](https://facebook.github.io/flux/docs/ove
      └──────────────────────────────────────┘
 
 ```
-
-The pattern is composed of actions and data stores, where actions initiate new data to pass through data stores before coming back to the view components again. If a view component has an event that needs to make a change in the application's data stores, they need to do so by signaling to the stores through the actions available.
+这个模式由actions和data stores组成，actions初始化的新数据在视图组件回调之前传递给data stores,进而去改变视图组件.
+如果视图组件有需要改变的事件在data stores，它需要通过actions发送去改变data stores
 
 Feel free to open an issue on our [**discussion forum**](https://github.com/reflux/discuss) for **questions and general discussion**.  Here is a complete list of communication channels:
 
@@ -471,9 +471,8 @@ var Status = React.createClass({
 ```
 
 #### Convenience mixin for React
-
-You always need to unsubscribe components from observed actions and stores upon
-unmounting. To simplify this process you can use [mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `Reflux.ListenerMixin`. Using that, the above example can be written like thus:
+你总是需要通过actions的观察者模式去取消订阅组件和删除stores上的数据，这个过程类似你用
+[mixins in React](http://facebook.github.io/react/docs/reusable-components.html#mixins). There is a convenience mixin available at `Reflux.ListenerMixin`. Using that, the above example can be written like thus:
 
 ```javascript
 var Status = React.createClass({
